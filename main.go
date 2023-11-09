@@ -98,15 +98,16 @@ func proxy(w http.ResponseWriter, r *http.Request) {
 	}
 	defer orgRes.Body.Close()
 
-	if orgRes.Header.Get("Last-Modified") != "" {
-		w.Header().Set("Last-Modified", orgRes.Header.Get("Last-Modified"))
-	} else {
-		w.Header().Set("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
-	}
-
-	if orgRes.StatusCode == http.StatusNotModified {
-		w.WriteHeader(http.StatusNotModified)
-		return
+	if pathExt != ".webp" {
+		if orgRes.Header.Get("Last-Modified") != "" {
+			w.Header().Set("Last-Modified", orgRes.Header.Get("Last-Modified"))
+		} else {
+			w.Header().Set("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
+		}
+		if orgRes.StatusCode == http.StatusNotModified {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
 	}
 
 	if orgRes.StatusCode != http.StatusOK {
